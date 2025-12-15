@@ -222,7 +222,7 @@ for g in [2,3,4,5,6]:
 ------
 # **Uczenie NIEnadzorowane**
 
-Wykonaj grupowanie danych podaną przez prowadzącego metodą, w szczególności:
+Grupowanie danych, w szczególności:
 
 * oceń wizualnie wyniki grupowania,
 * określ optymalną liczbę grup,
