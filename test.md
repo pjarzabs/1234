@@ -222,11 +222,92 @@ for g in [2,3,4,5,6]:
 ------
 # **Uczenie NIEnadzorowane**
 
+Wykonaj grupowanie danych podaną przez prowadzącego metodą, w szczególności:
+
+* oceń wizualnie wyniki grupowania,
+* określ optymalną liczbę grup,
+* porównaj wyniki grupowania z wartościami atrybutu decyzyjnego,
+* wykonaj eksperymenty dla wszystkich oraz dla wybranych atrybtów - czy wybór atrykutów ma wpływ na wynik grupowania ?
 
 
 
+```python
+plt.title("Zbiór danych")
+plt.scatter(data_ng['1'], data_ng['3'])
+```
+----
 
 
+## Klasyfikator k-średnich (k-means) + analiza **SYLWETEK**:
+```python
+# -------- klasyfikator k-średnich + analiza sylwetek -------- 
+def test_kMean(x, y):
+    liczby_grup = [2, 3, 4, 5, 6, 7, 8]
+    miara_jakosci = pd.Series()
+
+    for ile_grup in liczby_grup :
+
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig.set_size_inches(15, 5)
+
+        ax1.set_xlim([-0.2, 1]) # zakres zmian współczynnika sylwetki
+        ax1.set_ylim([0, len(dna) + (ile_grup + 1) * 10]) # organizacja wydruku
+
+        kmeans = KMeans(n_clusters = ile_grup, random_state = 0).fit(data_ng)
+        miara_jakosci = pd.concat([miara_jakosci, pd.Series(kmeans.inertia_)])
+        etykiety_grup = kmeans.fit_predict(dna[[str(x),str(y)]])
+
+        # oblicza miary sylwetek dla każdek grupy
+        sylwetka = silhouette_samples(dna[[str(x),str(y)]], etykiety_grup)   
+        # średnia wartość sylwetki
+        srednia_sylwetka = silhouette_score(dna[[str(x),str(y)]], etykiety_grup)
+
+        pozycja_kreski = 10
+        for i in range(ile_grup):
+            # Zebranie wyników sylwetek do próbek należących do klastra i ich sortowanie
+            sylwetka_w_grupie = sylwetka[etykiety_grup == i]
+            sylwetka_w_grupie.sort()
+
+            liczebnosc_grupy = sylwetka_w_grupie.shape[0]
+            kolor = cm.tab10(float(i) / ile_grup)
+            ax1.fill_betweenx(np.arange(pozycja_kreski, pozycja_kreski + liczebnosc_grupy), 0, sylwetka_w_grupie ,color = kolor)
+
+            # Wyliczenie przesunięcia w pionie dla wykresu kolejnej grupy
+            pozycja_kreski += liczebnosc_grupy + 10  # 10 dla kolejnej próbki
+
+        ax1.set_title("Wykres sylwetek dla poszczegolnych liczb grup")
+        ax1.set_xlabel("Wartosc sylwetek")
+        ax1.set_ylabel("Etykiety grup")
+
+        # Wyrysowanie wartości średniej sylwetki 
+        ax1.axvline(x = srednia_sylwetka, color = "black", linestyle = "--")
+        ax1.set_yticks([])  # Wyczyszczenie etykiety osi Y
+        ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+
+        # Drugi wykres będzie przedstawiał klastry
+        kolory = cm.tab10(etykiety_grup.astype(float) / ile_grup)
+        ax2.scatter(dna.iloc[:,x], dna.iloc[:,y], marker = '.', s = 30, lw = 0, alpha = 0.7,c = kolory)
+
+        ax2.set_title("Wizualizacja grupowania danych")
+        ax2.set_xlabel("Atrybut %d" % x)
+        ax2.set_ylabel("Atrybut %d" % y)
+
+        plt.suptitle(("Analiza sylwetki k = %d" % ile_grup),  fontweight = 'bold')
+        plt.figtext(0.14, 0, ("Dla n = %d, średnia wartosc sylwetki wynosi: %.3f, Suma odleglosci od centroidow: %.2f"
+                     % (ile_grup, srednia_sylwetka, kmeans.inertia_ ) ))
+        plt.show()
+
+
+
+    # ---------- Wykres Łokciowy ----------
+    plt.plot(liczby_grup, miara_jakosci,'bo-')
+    plt.title("Wykres lokciowy", fontsize = 14, fontweight = 'bold')
+    plt.xlabel("Liczba grup")
+    plt.ylabel("Suma odleglosci od centroidow")
+    
+test_kMean(1, 3)
+```
+----
 
 
 
