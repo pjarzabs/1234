@@ -1,7 +1,13 @@
 # **Wyznaczanie liczby obiektów, klas, atrybutów, etc**
 
 
+## NAJLEPSZA (i najprostsza) WERSJA:
 ```python
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+"""
 # liczba obiektów (obserwacji)
 d0.shape[0]
 
@@ -16,9 +22,21 @@ d0.drop(columns=['klasa']).shape[1]
 
 # liczba brakujących danych
 d0.isna().sum().sum()
+"""
+
+print("Liczba obiektow:", d0.shape[0])
+print("Liczba klas:", d0['klasa'].nunique())
+print("Obiekty w klasach:")
+print(d0['klasa'].value_counts())
+print("Liczba atrybutow:", d0.shape[1] - 1)  # POD WARUNKIEM, że kolumna "klasa" faktycznie istnieje i jest jedną kolumną (dlatego - 1)
+print("Liczba brakow danych:", d0.isna().sum().sum())
+
+
 ```
 -----
 
+
+## *Upośledzona* wersja
 ```python
 import numpy as np
 import pandas as pd
