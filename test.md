@@ -1,13 +1,8 @@
-## Jak wyznaczać?
-- łączna liczbę obiektów (obserwacji)
-- liczbę klas
-- liczbę obiektów w każdej klasie
-- liczbę atrybutów/cech
-- liczbę brakujących danych
+# **Wyznaczanie liczby obiektów, klas, atrybutów, etc**
 
 
 ```python
-# liczba obiektów
+# liczba obiektów (obserwacji)
 d0.shape[0]
 
 # liczba klas
@@ -16,13 +11,14 @@ d0['klasa'].nunique()
 # liczba obiektów w każdej klasie
 d0['klasa'].value_counts()
 
-# liczba atrybutów
+# liczba atrybutów/cech
 d0.drop(columns=['klasa']).shape[1]
 
 # liczba brakujących danych
 d0.isna().sum().sum()
 ```
 -----
+
 ```python
 import numpy as np
 import pandas as pd
@@ -62,16 +58,17 @@ dna = d0.dropna()
 
 #dane bez grup
 data_ng = dna.iloc[:,:-1]
+```
+----
 
 
 
 
 
+# **KORELACJA i "WZAJEMNE" WYKRESY**
 
-
-
-
-
+Korelacja:
+```python
 corr = dna.corr()    # "corr" czyli correlation - korelacja 
 
 plt.figure(figsize=(10, 10))    # przygotowuje miejsce na nasz wykresik, o podanym rozmiarze 10x10
@@ -80,10 +77,22 @@ plt.show()
 
 # annot=True --> wpisuje wartości wewnątrz kwadracików - teraz jest łatwiej i czytelnie
 # square=True --> ładne kwadraty, zamiast "rozjechanych" prostokątów - estetyka!
+```
+----
 
+* ile, wizualnie, możesz wyróżnic grup
+* które atrybuty są bardziej, a które mniej istotne w kontekście uczenia maszynowego nadzorowanego i nienadzorowanego
 
+*Wzajemne* wykresy:
+```python
+sns.pairplot(dna.iloc[:,:-1], kind="scatter")
+plt.show()
+```
 
+# **UCZENIE NADZOROWANE**
+## Różne klasyfikatory (Bayes, drzewo, NN, etc)
 
+```python
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestNeighbors
@@ -162,21 +171,57 @@ def weryfikuj(model, dane, atryb):
 
 
 nazwa_pliku = 'dane.csv'
+
 # wczytanie badanego zbioru danych
 df = pd.read_csv(nazwa_pliku)
+
 # podział zbioru danych
 dane = podziel(df,0.3)
 print('Liczba obiektów zbioru uczącego: ', len(dane["opis_ucz"]))
 print('Liczba obiektów zbioru testowego: ', len(dane["opis_test"]))
-# zdefiniowanie modelu klasyfikatora
+
+# ---------- K-NAJBLIŻSZYCH SĄSIADÓW ----------
+
 model = KNeighborsClassifier(n_neighbors=5)
+
 # wybór atrybutów
 ax, ay = 0,1
+
 # granice dycyzyjne
 granice(model,dane,ax,ay,"klasyfikator NN dla zbioru " + nazwa_pliku)
+
 # weryfikacja
 weryfikuj(model,dane,[ax,ay])
+
+
+
+# ---------- BAYES ----------
+model_bayes = GaussianNB()
+granice(model_bayes, dp, 1, 3,f"Klasyfikator Bayesa dla x=1, y=3")
+granice(model_bayes, dp, 3, 5,f"Klasyfikator Bayesa dla x=3, y=5")
+
+
+
+
+# ---------- DRZEWO DECYZYJNE ----------
+for g in [2,3,4,5,6]:
+    drzewo = tree.DecisionTreeClassifier(max_depth=g)
+    tekst = "drzewo o głębokości " + str(g) + " dla x=1, y=3"
+    granice(drzewo ,dp,1,3,tekst)
+    
+for g in [2,3,4,5,6]:
+    drzewo = tree.DecisionTreeClassifier(max_depth=g)
+    tekst = "drzewo o głębokości " + str(g) + " dla x=3, y=5"
+    granice(drzewo ,dp,3,5,tekst)
+
+
 ```
+
+
+
+------
+# **Uczenie NIEnadzorowane**
+
 
 
 
