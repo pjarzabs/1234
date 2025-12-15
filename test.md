@@ -325,13 +325,98 @@ def test_kMean(x, y):
     
 test_kMean(1, 3)
 ```
+
+
+
+
 ----
 
 
 
 
+## Grupowanie aglomeracyjne - TODO (W.I.P., nie wiem czy dobrze)
+
+```python
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import silhouette_samples, silhouette_score
+import matplotlib.cm as cm
+
+def test_agglomerative(x, y):
+    liczby_grup = [2, 3, 4, 5, 6, 7, 8]
+
+    for ile_grup in liczby_grup:
+
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig.set_size_inches(15, 5)
+
+        ax1.set_xlim([-0.2, 1])
+        ax1.set_ylim([0, len(dna) + (ile_grup + 1) * 10])
+
+        # -------- AGLOMERACYJNE GRUPOWANIE --------
+        model = AgglomerativeClustering(
+            n_clusters=ile_grup,
+            linkage='ward'  # klasyczne, euklidesowe
+        )
+
+        etykiety_grup = model.fit_predict(dna[[str(x), str(y)]])
+
+        # -------- ANALIZA SYLWETKI --------
+        sylwetka = silhouette_samples(dna[[str(x), str(y)]], etykiety_grup)
+        srednia_sylwetka = silhouette_score(dna[[str(x), str(y)]], etykiety_grup)
+
+        pozycja_kreski = 10
+        for i in range(ile_grup):
+            sylwetka_w_grupie = sylwetka[etykiety_grup == i]
+            sylwetka_w_grupie.sort()
+
+            liczebnosc_grupy = sylwetka_w_grupie.shape[0]
+            kolor = cm.tab10(float(i) / ile_grup)
+
+            ax1.fill_betweenx(
+                np.arange(pozycja_kreski, pozycja_kreski + liczebnosc_grupy),
+                0,
+                sylwetka_w_grupie,
+                color=kolor
+            )
+
+            pozycja_kreski += liczebnosc_grupy + 10
+
+        ax1.axvline(x=srednia_sylwetka, color="black", linestyle="--")
+        ax1.set_title("Wykres sylwetek dla poszczegolnych liczb grup")
+        ax1.set_xlabel("Wartosc sylwetek")
+        ax1.set_ylabel("Etykiety grup")
+        ax1.set_yticks([])
+
+        # -------- WIZUALIZACJA --------
+        kolory = cm.tab10(etykiety_grup.astype(float) / ile_grup)
+        ax2.scatter(
+            dna.iloc[:, x],
+            dna.iloc[:, y],
+            marker='.',
+            s=30,
+            alpha=0.7,
+            c=kolory
+        )
+
+        ax2.set_title("Wizualizacja grupowania danych")
+        ax2.set_xlabel("Atrybut %d" % x)
+        ax2.set_ylabel("Atrybut %d" % y)
+
+        plt.suptitle(
+            "Analiza sylwetki (aglomeracyjne), k = %d" % ile_grup,
+            fontweight='bold'
+        )
+
+        plt.figtext(
+            0.14, 0,
+            "Dla k = %d, srednia wartosc sylwetki: %.3f"
+            % (ile_grup, srednia_sylwetka)
+        )
+
+        plt.show()
 
 
+```
 
 
 
