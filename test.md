@@ -456,10 +456,67 @@ test_agglomerative(x, y)
 * **przetrenowanie** (overfitting, nadmierne dopasowanie, przeuczenie) w uczeniu NADZOROWANYM jest wtedy, kiedy funkcja czy klasyfikator **za bardzo** się dopasowuje, wtedy tworzą się jakieś dziwne "wysepki" na wykresie, etc... Dopasowanie jest za bardzo specyficzne do konkretnych danych, gdyby dać nowe dane to by źle działało.
 * **underfitting** (niedouczenie, niedotrenowanie) w uczeniu NADZOROWANYM jest wtedy, kiedy klasyfikator jest za słaby i za bardzo generalizuje i np. grupuje dwie oddzielne grupy w jedną grupę (nie rozróżnia dwóch grup). Ogólnie zawsze wtedy, kiedy źle dopasowuje się do danych, np. bierze wszystko *"do jednego wora"*.
 
-* ...
+
+* Dendrogram to drzewiasta reprezentacja hierarchicznego grupowania danych, pokazująca kolejność i odległość łączenia obiektów w klastry.
+* Macierz pomyłek pokazuje, które klasy są ze sobą najczęściej mylone oraz pozwala ocenić, czy model generalizuje na dane testowe.
+
+[[18  5  3  3]
+ [ 3 15  3  1]
+ [ 9  8 12  0]
+ [10  8  7  3]]
+
+[18  5  3  3]
+18 obiektów klasy 0 → poprawnie jako 0
+5 → pomylone z klasą 1
+3 → pomylone z klasą 2
+3 → pomylone z klasą 3
+
+[9  8 12  0]
+tylko 12 poprawnych
+aż 17 pomyłek (9→0, 8→1)
+
+**k-średnich** to algorytm grupowania danych (uczenie nienadzorowane), który:
+* dzieli dane na k klastrów (musimy SAMI wybrać)
+* każdy klaster ma środek (centroid),
+* obiekt trafia do najbliższego centroidu.
 
 
+Wykres łokciowy służy do wyboru liczby klastrów, wskazując punkt, w którym dalsze zwiększanie k nie daje istotnej poprawy jakości.
 
+### Jak to się łączy razem?
+1. Wykres łokciowy → proponuje liczbę klastrów "k" (w zagięciu łokcia)
+2. Analiza sylwetki → sprawdza, czy to "k" ma sens
+3. k-means → wykonuje grupowanie
+
+### Analiza wykresu łokciowego:
+**Przypadek 1: wyraźny łokieć**
+Na wykresie łokciowym widoczny jest wyraźny punkt załamania dla k = 3, po którym dalsze zwiększanie liczby klastrów powoduje jedynie niewielką poprawę jakości. Wskazuje to, że k = 3 jest rozsądnym wyborem.
+
+**Przypadek 2: brak wyraźnego łokcia**
+Wykres łokciowy nie wskazuje jednoznacznego punktu załamania, co może sugerować brak naturalnej struktury klastrowej w danych. W takim przypadku konieczna jest dodatkowa analiza, np. współczynnika sylwetki.
+
+### Analiza SYLWETEK:
+Dobre k:
+> Dla k = 3 średnia wartość współczynnika sylwetki jest najwyższa, a większość obserwacji osiąga wartości dodatnie, co wskazuje na dobrze rozdzielone klastry.
+
+Złe k:
+> Dla k = 5 widoczna jest znaczna liczba obserwacji o ujemnych wartościach sylwetki, co oznacza, że część obiektów została przypisana do niewłaściwych klastrów.
+
+Ujemna sylwetka = argument przeciw temu "k"
+
+### Analiza k-śrenich klastrów:
+Dobrze:
+> Otrzymane klastry są względnie zwarte i dobrze odseparowane, a centroidy znajdują się w centralnych częściach skupień, co potwierdza poprawność działania algorytmu k-średnich.
+
+Źle:
+> Widoczne jest znaczne nakładanie się klastrów, co sugeruje, że dane nie posiadają wyraźnej struktury klastrowej lub wybrana liczba klastrów nie jest optymalna.
+
+### Ogólnie:
+Jeśli są **dobre** wyniki:
+> Na podstawie wykresu łokciowego jako potencjalną liczbę klastrów wskazano k = 3. Wartość ta została potwierdzona analizą sylwetki, dla której średni współczynnik osiągnął maksimum, a liczba wartości ujemnych była niewielka. Wynik klasteryzacji metodą k-średnich pokazuje względnie zwarte i dobrze rozdzielone klastry, co wskazuje na sensowną strukturę danych.
+
+Jeśli są **złe** wyniki:
+> Niska wartość współczynnika sylwetki oraz brak wyraźnego punktu załamania na wykresie łokciowym sugerują, że dane nie posiadają naturalnej struktury klastrowej lub metoda k-średnich nie jest odpowiednia dla tego zbioru danych.
 
 
 
