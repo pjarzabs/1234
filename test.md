@@ -475,10 +475,15 @@ test_agglomerative(x, y)
 tylko 12 poprawnych
 aż 17 pomyłek (9→0, 8→1)
 
+
+----
+
+
 **k-średnich** to algorytm grupowania danych (uczenie nienadzorowane), który:
 * dzieli dane na k klastrów (musimy SAMI wybrać)
 * każdy klaster ma środek (centroid),
 * obiekt trafia do najbliższego centroidu.
+
 
 
 Wykres łokciowy służy do wyboru liczby klastrów, wskazując punkt, w którym dalsze zwiększanie k nie daje istotnej poprawy jakości.
@@ -495,6 +500,8 @@ Na wykresie łokciowym widoczny jest wyraźny punkt załamania dla k = 3, po kt�
 **Przypadek 2: brak wyraźnego łokcia**
 Wykres łokciowy nie wskazuje jednoznacznego punktu załamania, co może sugerować brak naturalnej struktury klastrowej w danych. W takim przypadku konieczna jest dodatkowa analiza, np. współczynnika sylwetki.
 
+----
+
 ### Analiza SYLWETEK:
 Dobre k:
 > Dla k = 3 średnia wartość współczynnika sylwetki jest najwyższa, a większość obserwacji osiąga wartości dodatnie, co wskazuje na dobrze rozdzielone klastry.
@@ -504,6 +511,12 @@ Złe k:
 
 Ujemna sylwetka = argument przeciw temu "k"
 
+**Dobra sylwetka** = wysoka, szeroka i dodatnia
+**Zła sylwetka** = niska, wąska i z ujemnymi wartościami
+
+----
+
+
 ### Analiza k-śrenich klastrów:
 Dobrze:
 > Otrzymane klastry są względnie zwarte i dobrze odseparowane, a centroidy znajdują się w centralnych częściach skupień, co potwierdza poprawność działania algorytmu k-średnich.
@@ -511,12 +524,18 @@ Dobrze:
 Źle:
 > Widoczne jest znaczne nakładanie się klastrów, co sugeruje, że dane nie posiadają wyraźnej struktury klastrowej lub wybrana liczba klastrów nie jest optymalna.
 
+----
+
+
 ### Ogólnie:
 Jeśli są **dobre** wyniki:
 > Na podstawie wykresu łokciowego jako potencjalną liczbę klastrów wskazano k = 3. Wartość ta została potwierdzona analizą sylwetki, dla której średni współczynnik osiągnął maksimum, a liczba wartości ujemnych była niewielka. Wynik klasteryzacji metodą k-średnich pokazuje względnie zwarte i dobrze rozdzielone klastry, co wskazuje na sensowną strukturę danych.
 
 Jeśli są **złe** wyniki:
 > Niska wartość współczynnika sylwetki oraz brak wyraźnego punktu załamania na wykresie łokciowym sugerują, że dane nie posiadają naturalnej struktury klastrowej lub metoda k-średnich nie jest odpowiednia dla tego zbioru danych.
+
+
+
 
 
 
