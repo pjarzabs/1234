@@ -66,7 +66,7 @@ for i in range(0,count_objs):
 print("liczba obiektow w kazdej klasie:", arr)
 
 # liczba atrybutów
-print("liczba atrybutow:", d0.shape[1])
+print("liczba atrybutow:", d0.shape[1] - 1) # "-1" jeżeli kolumna "klasa" ISTNIEJE (bo wtedy bierze ją niepotrzebnie)
 
 # liczba danych brakujących
 print("liczba danych brakujacych:", d0.isna().sum().sum())
