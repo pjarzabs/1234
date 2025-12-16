@@ -451,6 +451,13 @@ test_agglomerative(x, y)
 
 ```
 
+# **DODATKOWE WNIOSKI/PROTIPY** (pisemnie)
+
+* przetrenowanie (overfitting, nadmierne dopasowanie, przeuczenie) w uczeniu NADZOROWANYM jest wtedy, kiedy funkcja czy klasyfikator **za bardzo** się dopasowuje, wtedy tworzą się jakieś dziwne "wysepki" na wykresie, etc... Dopasowanie jest za bardzo specyficzne do konkretnych danych, gdyby dać nowe dane to by źle działało.
+* underfitting (niedouczenie, niedotrenowanie) w uczeniu NADZOROWANYM jest wtedy, kiedy klasyfikator jest za słaby i za bardzo generalizuje i np. grupuje dwie oddzielne grupy w jedną grupę (nie rozróżnia dwóch grup). Ogólnie zawsze wtedy, kiedy źle dopasowuje się do danych, np. bierze wszystko *"do jednego wora"*.
+* ...
+
+
 
 
 
