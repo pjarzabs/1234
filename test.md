@@ -340,6 +340,7 @@ test_kMean(1, 3)
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.cm as cm
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 def test_agglomerative(x, y):
     liczby_grup = [2, 3, 4, 5, 6, 7, 8]
@@ -416,8 +417,39 @@ def test_agglomerative(x, y):
         plt.show()
 
 
-```
+x = 0   # numer atrybutu
+y = 1   # numer atrybutu
 
+test_agglomerative(x, y)
+
+
+```
+----
+### Dodatkowo: dendrogram:
+
+```python
+def rysuj_dendrogram(x, y):
+    X = dna[[str(x), str(y)]].values
+
+    # macierz połączeń (to jest "drzewo")
+    Z = linkage(X, method='ward')
+
+    plt.figure(figsize=(10, 5))
+    dendrogram(Z)
+    plt.title("Dendrogram (aglomeracyjne, ward)")
+    plt.xlabel("Obiekty")
+    plt.ylabel("Odleglosc")
+    plt.show()
+
+
+x = 0   # numer atrybutu
+y = 1   # numer atrybutu
+
+rysuj_dendrogram(x, y)
+test_agglomerative(x, y)
+
+
+```
 
 
 
