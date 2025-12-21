@@ -49,6 +49,7 @@ w którym argument:
 
 ## Komentarz odnośnie mojego programu:
 * Użyłem `ISO-8859-1` (z biblioteki `java.nio.charset.StandardCharsets`), ponieważ jest to kodowanie 8-bitowe z mapowaniem 1:1 "bajt na znak", dzięki czemu mogę bezpiecznie traktować bajty pliku jako znaki w String, używać ich do porównań i haszowania, a następnie odzyskać dokładnie te same bajty bez utraty informacji (w przeciwieństwie do chociażby `UTF-8`).
+
 [ISO-8859-1 (Wikipedia)](https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
 
 
