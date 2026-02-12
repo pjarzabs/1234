@@ -535,7 +535,292 @@ Jeśli są **złe** wyniki:
 > Niska wartość współczynnika sylwetki oraz brak wyraźnego punktu załamania na wykresie łokciowym sugerują, że dane nie posiadają naturalnej struktury klastrowej lub metoda k-średnich nie jest odpowiednia dla tego zbioru danych.
 
 
+----
+
+## **Dane tekstowe**:
+
+
+```python
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import CountVectorizer
+# zmiana sposobu wyświetlania danych typu float
+pd.options.display.float_format = "{:.3f}".format 
 
 
 
+# 1. Wczytaj plik tekstowy jako tablicę linii . 
+pantadeusz = []
+ograniczniki = ["\\n", "'"]
+with open('pan Tadeusz.txt', encoding='utf-8') as f:
+    for line in f:
+        linijka = repr(line)
+        for znak in ograniczniki:
+            linijka = linijka.replace(znak,"")
+        if not(linijka == ""):
+            pantadeusz.append(linijka)
+print(pantadeusz[0:30])
+
+
+
+
+# 2. Usuń z tekstu niepotrzebne znaki `niepotrzebne_znaki = ["!",",", ".","    ",":",";","?","(",")","— ","*","»","…","«","—"]`
+# oraz 3. Dokonaj tokenizacji tekstu
+
+tokeny = []
+niepotrzebne_znaki = ["!",",", ".","    ",":",";","?","(",")","— ","*","»","…","«","—"] 
+
+lista_slow = [] # to nie może być w pętli, bo się będzie cały czas "zerować", przy każdej iteracji!
+for linijka in pantadeusz:
+        for znak in niepotrzebne_znaki:
+            linijka = linijka.replace(znak,"").lower()
+        slowa_linijki = linijka.split()
+        for slowo in slowa_linijki:  # dla każego "zesplitowanego" słowa, dodaj do listy słów
+            lista_slow.append(slowo)
+tokeny.append(lista_slow)
+
+# "tokeny" --> to są pojedyńcze słowa/wyrazy, pozbawione znaków specjalnych
+# "pantadeusz" --> to są całe linijki, ze znakami specjalnymi
+
+
+# 4. Policz:
+#   - Ilość wszystkich unikalnych słów w tekście,
+#   - Ilość występowania każdego słowa w tekście,
+#   - Ile wyrazów posiada najdłuższa i najkrótsza linia, jaka jest średnia długość linii?  
+
+def utworz_slownik(lista_slow):
+    slownik = {}
+    for slowo in sorted(lista_slow):
+        if slowo in slownik.keys():
+            slownik[slowo] = slownik[slowo] + 1
+        else:
+            slownik[slowo] = 1
+    return slownik
+
+def pokaz_slownik(slownik,zakres):
+    dlugosc = len(slownik)
+    if zakres[0]<0: zakres[0]=0
+    if zakres[1]>dlugosc: zakres[1]=dlugosc
+    if zakres[1]>zakres[0]:
+        i = 0
+        for klucz,wartosc in slownik.items():
+            if i>=zakres[0] and i<zakres[1]:
+                print(klucz,":",wartosc)
+            i = i+1
+            
+slownik1 = utworz_slownik(tokeny[0])   # ZAPAMIĘTAJ --> tu musisz zmienić na "[0]", żeby było "tokeny[0]", inaczej nie zadziała!!
+
+print(); print(); print()
+
+print("Ilość występowania każdego słowa w tekście:")
+pokaz_slownik(slownik1,[0,10])
+
+print("Ilość wszystkich unikalnych słów w tekście wynosi", len(slownik1))
+
+
+# maks = 0
+# for linijka in pantadeusz:
+#     dlugosc_linijki = len(linijka)
+#     if dlugosc_linijki > maks:
+#         maks = dlugosc_linijki
+# print("Najdłuższa linijka wynosi:", maks)
+
+# print(type(pantadeusz))
+# print(type(linijka))
+print(); print(); print()
+
+
+
+najdluzsza_linia = max(pantadeusz, key=len)
+najkrotsza_linia = min(pantadeusz, key=len)
+
+liczba_wyrazow_najdluzsza = len(najdluzsza_linia.split())
+liczba_wyrazow_najkrotsza = len(najkrotsza_linia.split())
+
+srednia_dlugosc_linii = sum(len(l) for l in pantadeusz) / len(pantadeusz)
+
+print("Najdłuższa linia ma", liczba_wyrazow_najdluzsza, "wyrazów")
+print("Najkrótsza linia ma", liczba_wyrazow_najkrotsza, "wyrazów")
+print("Średnia długość linii wynosi", round(srednia_dlugosc_linii, 2), "znaków")
+
+
+# 5. Podaj:
+#    - 10 najczęściej występujacych słów,
+#    - 10 najdłuższych słów,
+#    - średnia długość słowa w całym tekście
+
+
+# 10 najczęściej występujacych słów,
+print("top 10 najczęściej występujacych słów:")
+po_dlugosci = dict(sorted(slownik1.items(), key=lambda x: len(x[0]), reverse = False ))
+pokaz_slownik(po_dlugosci,[0,10])
+
+# 10 najdłuższych słów,
+print("top 10 najdłuższych słów:")
+po_dlugosci = dict(sorted(slownik1.items(), key=lambda x: len(x[0]), reverse = True ))
+pokaz_slownik(po_dlugosci,[0,10])
+```
+
+----
+
+
+## **DANE RASTROWE (obrazy):**
+
+
+```python
+
+obr_gray = sic.rgb2gray(io.imread('obiekty2.tif'))*255
+
+prog = sif.threshold_otsu(obr_gray)
+print("prog Otsu:" + str(prog))
+liobr = []
+lipod = []
+liobr.append(obr_gray)
+lipod.append("obr. oryg.")
+
+# segmented = liobr.append(obr_gray>prog) --> ŹLE KURWAAA!!! (bo wtedy segmented = NULL)
+segmented = obr_gray > prog
+liobr.append(obr_gray>prog)    # tak jest dobrze, prawidłowo dodaje 
+
+lipod.append("prog Otsu")
+pliob(liobr,2,lipod)
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# MEGA WAŻNE --> trzeba dodać przekopiowany ten fragment z odwróceniem, ten z początku
+lut = np.empty((256), np.uint8)
+for i in range(256):
+    lut[i] = int(255 - i)
+
+obraz = io.imread('obiekty2.tif')
+odwrocony = pokazlut(obraz,lut)
+
+binarny = (odwrocony >0)[:,:,1]   # WAŻNA ZMIANA: zamiast "obraz >120" --> to "odwrocony >0"
+otwarcie = simo.opening(binarny, simo.square(5))  # BEZ ZMIAN TA LINIJKA
+
+pliob([binarny, otwarcie], 2, ["binarny","binarny po użyciu filtra"]) #(tytuły są opcjonalne),(liczba oznacza ile obrazów w jednej linii)
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# etykietowanie
+etykiety = sime.label(otwarcie)    # MEGA WAŻNE --> trzeba zmienić "b" --> na "otwarcie" !!! tu musi być otwarcie!!
+plt.figure(figsize=(6,6), dpi = 80)
+plt.imshow(etykiety,'jet')
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+cechy = sime.regionprops(etykiety)
+plt.figure(figsize=(6,6), dpi = 80)
+plt.imshow(otwarcie, cmap=plt.cm.gray)
+for obiekt in cechy:
+    y0, x0 = obiekt.centroid
+    plt.plot(x0, y0, '.g', markersize=5)
+    minr, minc, maxr, maxc = obiekt.bbox
+    bx = (minc, maxc, maxc, minc, minc)
+    by = (minr, minr, maxr, maxr, minr)
+    plt.plot(bx, by, '-y', linewidth=1)
+plt.show()
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# to są te cehcy, że trzeba cechy opisać rózne atrybuty opisowe itp no wiesz
+
+# histogram rozmiarów
+rozmiary = np.zeros(len(cechy))
+for i in range(0,len(cechy)):
+    rozmiary[i] = cechy[i]['area']
+plt.hist(rozmiary,50)
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# ekstrakcja cech
+# wyszukiwanie kolorów
+
+o = obraz      # zmieniłem "o" --> na "obraz", inne nazewnictwo w tępo przekopiowanym kodzie
+
+kolory = np.unique(o.reshape(-1, o.shape[2]), axis=0)     
+kolory = kolory[1:7,:] # usuwa kolor tła
+print(kolory)
+      #   [[160,11,8], # granatowy
+      #    [9,168,57], # zielony
+      #    [6,9,209], # czerwony
+      #    [198,175,8], # niebieski
+      #    [189,8,141], # fioletowy
+      #    [34,191,236]] # żółty
+ile_obiektow = len(cechy)
+ile_kategorii = len(kolory)
+lista_cech = ['EulerNumber','Area','BoundingBoxArea','FilledArea','Extent','EquivDiameter','Solidity']
+ile_cech = len(lista_cech)
+tabela_cech = np.zeros((ile_obiektow,ile_cech+1))
+tabela_cech[0,:] = np.nan #np.ones((1,ile_cech +1))*-99 # cechy nieistniejącego obiektu o etykiecie "0"
+for i in range(0,ile_obiektow):
+    for j in range(0,ile_cech):
+      #  tabela_cech[i+1,j] = cechy[i][lista_cech[j]]
+      tabela_cech[i,j] = cechy[i][lista_cech[j]]
+    x,y = cechy[i]['Coordinates'][1] # wsp. jednego z punktów obiektu - do próbkowania koloru
+    for k in range(0,ile_kategorii):
+        if list(o[x,y,:]) == list(kolory[k,:]):
+            break;
+    tabela_cech[i,-1] = k
+tabela_cech[1:,0] = (tabela_cech[1:,0] == 1) # korekta liczby Eulera
+print(tabela_cech[1,:])
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+cechy = pd.DataFrame(columns = ["powierzchnia","powierzchnia bez dziur","liczba Eulera","wypełnienie","promień koła","wypełnienie bez dziur","typ obiektu"])
+cechy["powierzchnia"] = tabela_cech[:,1]
+cechy["powierzchnia bez dziur"] = tabela_cech[:,2]
+cechy["liczba Eulera"] = tabela_cech[:,0]
+cechy["wypełnienie"] = tabela_cech[:,4]
+cechy["promień koła"] = tabela_cech[:,5]
+cechy["wypełnienie bez dziur"] = tabela_cech[:,3]/tabela_cech[:,2]
+cechy["typ obiektu"] = tabela_cech[:,-1].astype(int)    # kompilator krzyczy, że "np.int" jest przestarzałe i trzeba zmienić na po prostu "int"!!!
+cechy = cechy.drop(0)
+cechy.head()
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# umożliwi rozróżnienie obiektów z otworem w środku i bez otworu, w oparciu o wybraną cechę,
+# wygeneruje obraz, na którym obiekty z otworem będą oznaczone kolorem zielonym, zaś bez otworu – czerwonym,
+# oraz policzy, ile jest obiektów w każdej z tych dwóch kategorii [5 pkt]
+
+# atrybut 0 - liczba Eulera
+
+euler_0 = np.where(tabela_cech[:,0] == 0) + np.array(1) # 0 - z otworami
+euler_1 = np.where(tabela_cech[:,0] == 1) + np.array(1) # 1 - bez otworów
+otwory = [np.where(np.isin(etykiety,euler_0),255,0),np.where(np.isin(etykiety,euler_1),255,0)]
+pliob(otwory,2)
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+sns.pairplot(cechy, kind="scatter", hue = "typ obiektu", palette = 'tab10')
+
+
+```
 
